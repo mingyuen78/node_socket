@@ -24,19 +24,39 @@ const program = async() => {
         },
     });
 
-    await instance.start();
+    // await instance.start();
 
-    instance.addTrigger({
-        name: 'EMITTER-TRIGGER',
-        expression: '*',
-        statement: MySQLEvents.STATEMENTS.ALL,
-        onEvent: (event) => { // You will receive the events here
-            if (event.schema == "justdb") {
-                myEmitter.emit('ping', { data: event.affectedRows[0].after });
-                return event;
-            }
-        },
-    });
+    // instance.addTrigger({
+    //     name: 'EMITTER-TRIGGER',
+    //     expression: '*',
+    //     statement: MySQLEvents.STATEMENTS.ALL,
+    //     onEvent: (event) => { // You will receive the events here
+    //         console.log(event);
+    //         if (event.schema == "chat_db") {
+    //             myEmitter.emit('ping', { data: event.affectedRows[0].after });
+    //             return event;
+    //         }
+    //     },
+    // });
+
+
+    instance
+        .start()
+        .then(() => {
+            console.log("Running MySQLEvents!");
+            instance.addTrigger({
+                name: "xyz",
+                expression: "*",
+                statement: MySQLEvents.STATEMENTS.ALL,
+                onEvent: (event) => {
+                    // Here you will get the events for the given expression/statement.
+                    // This could be an async function.
+                    console.log("event", event);
+                },
+            });
+        })
+        .catch((err) => console.error("Something bad happened MySQLEvents", err));
+
 
     instance.on(MySQLEvents.EVENTS.CONNECTION_ERROR, console.error);
     instance.on(MySQLEvents.EVENTS.ZONGJI_ERROR, console.error);
